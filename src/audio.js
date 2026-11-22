@@ -50,6 +50,38 @@ class SoundEngine {
     this.stage = stage;
   }
 
+  playSwordSwing() {
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(520, now);
+    osc.frequency.exponentialRampToValueAtTime(140, now + 0.11);
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.125);
+  }
+
+  playMeleeHit() {
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "square";
+    osc.frequency.setValueAtTime(240, now);
+    osc.frequency.exponentialRampToValueAtTime(75, now + 0.08);
+    gain.gain.setValueAtTime(0.11, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.085);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.09);
+  }
+
   playSplitToggle(split) {
     const ctx = this.ensureContext();
     if (!ctx) return;
@@ -374,15 +406,22 @@ class SoundEngine {
     const ctx = this.ensureContext();
     if (!ctx) return;
 
-    // Progresión Fase 1 (Ep.1 Cíclope: heroico disco-synth en Am)
+    // Adaptación 80s synth-disco del tema heroico de Ulises 31 (Fase 1 - Ep.1)
     const chordsStage1 = [
-      [220, 261.63, 329.63],
-      [174.61, 220, 261.63],
-      [196, 246.94, 293.66],
-      [164.81, 196, 246.94],
+      [220, 261.63, 329.63], // Am
+      [196, 246.94, 293.66], // G
+      [174.61, 220, 261.63], // F
+      [164.81, 207.65, 246.94], // E
     ];
-    // Progresión Fase 2 (Ep.2 Zotra: misterioso/cristalino en Em)
-    const chordsStage2 = [
+    // Fase 2 (A pie estilo Final Fight - ritmo contundente en Dm)
+    const chordsBrawler = [
+      [146.83, 174.61, 220], // Dm
+      [130.81, 164.81, 196], // C
+      [116.54, 146.83, 174.61], // Bb
+      [110, 138.59, 164.81], // A
+    ];
+    // Fase 3 (Ep.2 Zotra: misterioso/cristalino en Em)
+    const chordsStage3 = [
       [164.81, 196, 246.94],
       [130.81, 164.81, 196],
       [146.83, 185, 220],
@@ -393,26 +432,42 @@ class SoundEngine {
       [233.08, 293.66, 349.23],
     ];
 
+    // Bajo galopante octavado clásico de la sintonía de Ulises 31
     const bassStage1 = [
       110, 220, 110, 220, 110, 220, 110, 220,
-      87.31, 174.61, 87.31, 174.61, 87.31, 174.61, 87.31, 174.61,
       98, 196, 98, 196, 98, 196, 98, 196,
-      82.41, 164.81, 82.41, 164.81, 98, 196, 110, 220,
+      87.31, 174.61, 87.31, 174.61, 87.31, 174.61, 87.31, 174.61,
+      82.41, 164.81, 82.41, 164.81, 98, 196, 103.83, 207.65,
     ];
+    // Fanfarria + estribillo adaptado de Ulises 31 ("U-li-ses, U-li-ses...")
     const leadStage1 = [
-      440, 0, 523.25, 0, 659.25, 0, 587.33, 523.25,
-      440, 0, 349.23, 0, 440, 0, 523.25, 0,
-      392, 0, 493.88, 0, 587.33, 0, 523.25, 493.88,
-      329.63, 0, 392, 0, 440, 493.88, 523.25, 0,
+      440, 0, 523.25, 587.33, 659.25, 0, 659.25, 0,
+      587.33, 0, 523.25, 587.33, 493.88, 0, 392, 0,
+      440, 0, 523.25, 0, 659.25, 587.33, 523.25, 440,
+      493.88, 0, 523.25, 493.88, 440, 0, 329.63, 0,
     ];
 
-    const bassStage2 = [
+    // Bajo funk-rock arcade estilo Final Fight para la Fase 2 a pie
+    const bassBrawler = [
+      73.42, 73.42, 146.83, 73.42, 110, 73.42, 130.81, 146.83,
+      65.41, 65.41, 130.81, 65.41, 98, 65.41, 116.54, 130.81,
+      58.27, 58.27, 116.54, 58.27, 87.31, 58.27, 98, 116.54,
+      55, 55, 110, 55, 82.41, 98, 110, 130.81,
+    ];
+    const leadBrawler = [
+      293.66, 0, 349.23, 392, 440, 0, 392, 349.23,
+      261.63, 0, 329.63, 392, 349.23, 0, 329.63, 293.66,
+      233.08, 0, 293.66, 349.23, 392, 0, 349.23, 293.66,
+      220, 0, 277.18, 329.63, 440, 0, 523.25, 0,
+    ];
+
+    const bassStage3 = [
       82.41, 164.81, 82.41, 164.81, 98, 196, 82.41, 164.81,
       65.41, 130.81, 65.41, 130.81, 73.42, 146.83, 65.41, 130.81,
       73.42, 146.83, 73.42, 146.83, 82.41, 164.81, 73.42, 146.83,
       61.74, 123.47, 73.42, 146.83, 82.41, 164.81, 98, 196,
     ];
-    const leadStage2 = [
+    const leadStage3 = [
       659.25, 587.33, 493.88, 0, 659.25, 783.99, 739.99, 0,
       523.25, 493.88, 392, 0, 523.25, 659.25, 587.33, 0,
       587.33, 523.25, 440, 0, 587.33, 739.99, 659.25, 0,
@@ -433,14 +488,32 @@ class SoundEngine {
       const now = this.ctx.currentTime;
       const step = this.bgmStep++;
 
-      const bArr = this.bossMode ? bossBass : this.stage === 2 ? bassStage2 : bassStage1;
-      const lArr = this.bossMode ? bossLead : this.stage === 2 ? leadStage2 : leadStage1;
+      const bArr = this.bossMode
+        ? bossBass
+        : this.stage === 2
+        ? bassBrawler
+        : this.stage === 3
+        ? bassStage3
+        : bassStage1;
+      const lArr = this.bossMode
+        ? bossLead
+        : this.stage === 2
+        ? leadBrawler
+        : this.stage === 3
+        ? leadStage3
+        : leadStage1;
       const bFreq = bArr[step % bArr.length];
       const lFreq = lArr[step % lArr.length];
 
       // Pad de cuerdas espaciales cada 8 pasos (1 compás)
       if (step % 8 === 0) {
-        const cArr = this.bossMode ? chordsBoss : this.stage === 2 ? chordsStage2 : chordsStage1;
+        const cArr = this.bossMode
+          ? chordsBoss
+          : this.stage === 2
+          ? chordsBrawler
+          : this.stage === 3
+          ? chordsStage3
+          : chordsStage1;
         this.playPadChord(ctx, now, cArr[Math.floor(step / 8) % cArr.length]);
       }
 

@@ -278,26 +278,128 @@ kbd {
   color: #040611;
 }
 
-@media (hover: none) and (pointer: coarse), (max-width: 860px) {
+@media (hover: none) and (pointer: coarse), (max-width: 920px) {
   body {
-    padding: 4px;
+    padding: 0;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .cabinet {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   .topbar {
     flex-wrap: wrap;
-    padding: 8px 10px;
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .brand h1 {
+    font-size: 13px;
+  }
+
+  .badge {
+    display: none;
   }
 
   .quick-actions {
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 5px;
+  }
+
+  .quick-actions button,
+  .music-upload,
+  .pad-pill {
+    padding: 4px 7px;
+    font-size: 10px;
+  }
+
+  .stage-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    aspect-ratio: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #game {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
   .touch-controls {
     display: flex;
+    flex: 0 0 auto;
+    padding: 8px 14px;
   }
 
   .controls-bar {
     display: none;
+  }
+}
+
+/* En móvil/tablet horizontal (landscape): controles táctiles flotantes a los lados */
+@media ((hover: none) and (pointer: coarse) and (orientation: landscape)), (max-height: 540px) and (orientation: landscape) {
+  .topbar {
+    position: fixed;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    background: rgba(5, 8, 22, 0.72);
+    border: 1px solid rgba(46, 69, 135, 0.7);
+    border-radius: 8px;
+    padding: 3px 8px;
+  }
+
+  .brand {
+    display: none;
+  }
+
+  .touch-controls {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    background: transparent;
+    border: none;
+    pointer-events: none;
+    align-items: flex-end;
+    padding: 12px 18px;
+  }
+
+  .touch-stick-zone,
+  .touch-buttons {
+    pointer-events: auto;
+    opacity: 0.78;
+  }
+
+  .stick-base {
+    width: 98px;
+    height: 98px;
+  }
+
+  .tbtn-fire {
+    width: 72px;
+    height: 72px;
+  }
+
+  .tbtn-med {
+    width: 58px;
+    height: 58px;
+  }
+
+  .tbtn-small {
+    width: 48px;
+    height: 48px;
   }
 }

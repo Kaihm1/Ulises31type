@@ -3,8 +3,9 @@ import { sound } from "./audio.js";
 import { ParticleSystem } from "./particles.js";
 import { Player } from "./player.js";
 import { ForcePod } from "./forcePod.js";
-import { LevelDirector } from "./level.js?v=2";
-import { drawEnemy, updateEnemy } from "./enemies.js?v=2";
+import { LevelDirector } from "./level.js?v=3";
+import { drawEnemy, updateEnemy } from "./enemies.js?v=3";
+import { BrawlerMode } from "./brawler.js?v=1";
 
 const POWERUP_META = {
   red: { label: "R", color: COLORS.crimson },
@@ -24,6 +25,8 @@ export class Game {
     this.player = new Player();
     this.pod = new ForcePod(this.player);
     this.level = new LevelDirector();
+    this.brawler = new BrawlerMode();
+    this.currentStage = 1; // 1: Naves Ep.1 | 2: Ulises Final Fight | 3: Naves Zotra
 
     this.state = "title"; // title | playing | paused | gameover | victory
     this.score = 0;
@@ -42,9 +45,14 @@ export class Game {
   }
 
   startNewGame(stage = 1) {
+    this.currentStage = stage;
     this.player.reset();
     this.pod.reset();
-    this.level.reset(stage);
+    if (stage === 2) {
+      this.brawler.reset();
+    } else {
+      this.level.reset(stage);
+    }
     this.particles = new ParticleSystem();
     this.playerBullets = [];
     this.enemyBullets = [];
@@ -59,14 +67,18 @@ export class Game {
   }
 
   startNextStage() {
-    const nextStage = this.level.stage + 1;
-    // Conservar vidas, puntuación y mejoras del jugador al pasar de fase
+    const nextStage = this.currentStage + 1;
+    this.currentStage = nextStage;
     this.player.x = 140;
     this.player.y = HEIGHT * 0.45;
     this.player.invuln = 1.6;
     this.player.chargeTime = 0;
     this.pod.reset();
-    this.level.reset(nextStage);
+    if (nextStage === 2) {
+      this.brawler.reset();
+    } else {
+      this.level.reset(nextStage);
+    }
     this.particles = new ParticleSystem();
     this.playerBullets = [];
     this.enemyBullets = [];
@@ -79,6 +91,13 @@ export class Game {
     sound.startBgm();
   }
 
+  onBrawlerVictory() {
+    this.state = "stageclear";
+    sound.stopCharge();
+    sound.stopBgm();
+    sound.playVictoryFanfare();
+  }
+
   togglePause() {
     if (this.state === "playing") {
       this.state = "paused";
@@ -89,13 +108,19 @@ export class Game {
   }
 
   onPodAction() {
-    if (this.state === "playing") {
+    if (this.state !== "playing") return;
+    if (this.currentStage === 2) {
+      this.brawler.onLaser(this.particles);
+    } else {
       this.pod.toggle(this.particles);
     }
   }
 
   onSplitAction() {
-    if (this.state === "playing") {
+    if (this.state !== "playing") return;
+    if (this.currentStage === 2) {
+      this.brawler.onJump(this.particles);
+    } else {
       this.player.toggleSplit(this.particles);
     }
   }
@@ -129,6 +154,11 @@ export class Game {
       return;
     }
 
+    if (this.currentStage === 2) {
+      this.brawler.update(dt, input, this.particles, this);
+      return;
+    }
+
     // Secuencia de explosiones en cadena al derrotar al Cíclope
     if (this.bossDying) {
       this.bossDying.timer -= dt;
@@ -146,7 +176,7 @@ export class Game {
       if (this.bossDying.timer <= 0) {
         this.particles.explosion(this.bossDying.x, this.bossDying.y, 2.4);
         this.bossDying = null;
-        this.state = this.level.stage < 2 ? "stageclear" : "victory";
+        this.state = this.currentStage < 3 ? "stageclear" : "victory";
         sound.stopCharge();
         sound.stopBgm();
         sound.playVictoryFanfare();
@@ -511,6 +541,14 @@ export class Game {
       ctx.translate(sx, sy);
     }
 
+    if (this.currentStage === 2) {
+      this.brawler.draw(ctx, this.particles);
+      ctx.restore();
+      this.drawHud(ctx);
+      this.drawOverlays(ctx);
+      return;
+    }
+
     this.level.drawBackground(ctx);
 
     // Power-ups flotantes (Cristales estilo R-Type)
@@ -606,13 +644,15 @@ export class Game {
     const playH = this.level.getPlayableBottom();
     ctx.save();
 
-    // Barra superior de jefe o sector
-    const boss = this.enemies.find((e) => e.isBoss);
+    // Barra superior de jefe (Nave o Centurión)
+    const boss = this.currentStage === 2
+      ? this.brawler.enemies.find((e) => e.isBoss)
+      : this.enemies.find((e) => e.isBoss);
     ctx.textAlign = "center";
     ctx.font = "700 12px 'Segoe UI', system-ui, sans-serif";
     if (boss) {
       ctx.fillStyle = boss.phase2 ? COLORS.magenta : COLORS.crimson;
-      ctx.fillText(boss.phase2 ? boss.bossPhase2Name : boss.bossName, WIDTH * 0.5, 18);
+      ctx.fillText(boss.phase2 ? boss.bossPhase2Name : boss.bossName || boss.name, WIDTH * 0.5, 18);
       const bw = 280;
       const bx = WIDTH * 0.5 - bw * 0.5;
       ctx.fillStyle = "rgba(6, 10, 26, 0.85)";
@@ -651,13 +691,33 @@ export class Game {
       ctx.fill();
     }
 
-    // 2. Barra BEAM segmentada estilo R-Type (centro)
+    // 2. Barra central: ENERGÍA DE ULISES (Fase 2) o BEAM WAVE CANNON (Fases de Nave)
     const bw = 250;
     const bh = 14;
     const bx = WIDTH * 0.5 - bw * 0.5;
     const by = playH + 19;
 
     ctx.textAlign = "center";
+    if (this.currentStage === 2) {
+      ctx.fillStyle = COLORS.emerald;
+      ctx.font = "800 11px 'Segoe UI', system-ui, sans-serif";
+      ctx.fillText("ULISES  //  ENERGÍA DE TRAJE", WIDTH * 0.5, playH + 14);
+      ctx.fillStyle = "#0d1636";
+      ctx.fillRect(bx, by, bw, bh);
+      const hpRatio = Math.max(0, this.brawler.player.hp / this.brawler.player.maxHp);
+      ctx.fillStyle = hpRatio > 0.35 ? COLORS.emerald : COLORS.crimson;
+      ctx.fillRect(bx + 1, by + 1, (bw - 2) * hpRatio, bh - 2);
+      ctx.strokeStyle = "#4b69bd";
+      ctx.strokeRect(bx, by, bw, bh);
+
+      ctx.textAlign = "right";
+      ctx.fillStyle = COLORS.cyan;
+      ctx.font = "800 11px 'Segoe UI', system-ui, sans-serif";
+      ctx.fillText("Z: SABLE LÁSER · X: PISTOLA · V: SALTO", WIDTH - 16, playH + 28);
+      ctx.restore();
+      return;
+    }
+
     ctx.fillStyle = COLORS.cyan;
     ctx.font = "800 11px 'Segoe UI', system-ui, sans-serif";
     ctx.fillText("BEAM  //  WAVE CANNON", WIDTH * 0.5, playH + 14);
@@ -783,18 +843,21 @@ export class Game {
       ctx.font = "700 16px 'Segoe UI', system-ui, sans-serif";
       ctx.fillText("Pulsa ENTER, R o START para reintentar", WIDTH * 0.5, HEIGHT * 0.62);
     } else if (this.state === "stageclear") {
+      const nextLabel = this.currentStage === 1
+        ? "SIGUIENTE: FASE 2 — ASALTO AL TEMPLO CON ULISES (FINAL FIGHT)"
+        : "SIGUIENTE: FASE 3 — EPISODIO 02: EL PLANETA PERDIDO (ZOTRA)";
       ctx.fillStyle = COLORS.gold;
       ctx.font = "800 38px 'Segoe UI', system-ui, sans-serif";
-      ctx.fillText("¡EPISODIO 01 COMPLETADO!", WIDTH * 0.5, HEIGHT * 0.36);
+      ctx.fillText(`¡FASE ${this.currentStage} COMPLETADA!`, WIDTH * 0.5, HEIGHT * 0.36);
       ctx.fillStyle = COLORS.cyan;
-      ctx.font = "600 17px 'Segoe UI', system-ui, sans-serif";
-      ctx.fillText("SIGUIENTE DESTINO: EPISODIO 02 — EL PLANETA PERDIDO (ZOTRA)", WIDTH * 0.5, HEIGHT * 0.46);
+      ctx.font = "600 16px 'Segoe UI', system-ui, sans-serif";
+      ctx.fillText(nextLabel, WIDTH * 0.5, HEIGHT * 0.46);
       ctx.fillStyle = COLORS.white;
       ctx.font = "600 16px 'Segoe UI', system-ui, sans-serif";
       ctx.fillText(`PUNTUACIÓN ACTUAL: ${this.score}   ·   TUS MEJORAS SE CONSERVAN`, WIDTH * 0.5, HEIGHT * 0.55);
       ctx.fillStyle = COLORS.goldBright;
       ctx.font = "800 17px 'Segoe UI', system-ui, sans-serif";
-      ctx.fillText("PULSA ENTER, ESPACIO O START PARA IR A LA FASE 2", WIDTH * 0.5, HEIGHT * 0.67);
+      ctx.fillText("PULSA ENTER, ESPACIO, START O TOCA PARA CONTINUAR", WIDTH * 0.5, HEIGHT * 0.67);
     } else if (this.state === "victory") {
       ctx.fillStyle = COLORS.gold;
       ctx.font = "800 38px 'Segoe UI', system-ui, sans-serif";

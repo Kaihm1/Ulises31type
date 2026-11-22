@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>ULISES 31: ODISEA R-TYPE</title>
   <link rel="icon" href="assets/sprites/odiseus.jpg" type="image/jpeg" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#0a1026" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
   <div class="cabinet">
@@ -18,10 +18,11 @@
       </div>
       <div class="quick-actions">
         <span id="pad-status" class="pad-pill">MANDO: OFF</span>
-        <button id="btn-stage1" type="button" title="Jugar Fase 1: El Cíclope (1)">FASE 1</button>
-        <button id="btn-stage2" type="button" title="Jugar Fase 2: El Planeta Perdido (2)">FASE 2</button>
+        <button id="btn-stage1" type="button" title="Fase 1: Naves - El Cíclope (1)">F1: NAVE</button>
+        <button id="btn-stage2" type="button" title="Fase 2: Ulises a pie - Final Fight (2)">F2: ULISES</button>
+        <button id="btn-stage3" type="button" title="Fase 3: Naves - Zotra (3)">F3: ZOTRA</button>
         <label class="music-upload" title="Cargar MP3/OGG/WAV de la serie">
-          + MÚSICA MP3
+          + MP3
           <input id="music-file" type="file" accept="audio/*" hidden />
         </label>
         <button id="btn-mute" type="button" title="Silenciar / Activar audio (M)">AUDIO: ON</button>
@@ -50,15 +51,14 @@
     </div>
 
     <footer class="controls-bar">
-      <div class="ctrl"><kbd>WASD</kbd> / <kbd>Flechas</kbd> Mover</div>
-      <div class="ctrl"><kbd>Z</kbd> / <kbd>Espacio</kbd> Disparo + <strong>BEAM</strong></div>
-      <div class="ctrl"><kbd>C</kbd> Autofire</div>
-      <div class="ctrl"><kbd>X</kbd> / <kbd>Shift</kbd> <strong>Nono-Pod</strong></div>
-      <div class="ctrl"><kbd>V</kbd> / <kbd>E</kbd> <strong>Separar 3 Módulos</strong></div>
-      <div class="ctrl"><kbd>1</kbd>/<kbd>2</kbd> Fases · <kbd>P</kbd> Pausa · <kbd>M</kbd> Audio</div>
+      <div class="ctrl"><kbd>WASD</kbd>/<kbd>Flechas</kbd> Mover</div>
+      <div class="ctrl"><kbd>Z</kbd>/<kbd>Espacio</kbd> Disparo / Sable</div>
+      <div class="ctrl"><kbd>X</kbd>/<kbd>Shift</kbd> Nono-Pod / Pistola</div>
+      <div class="ctrl"><kbd>V</kbd>/<kbd>E</kbd> 3 Módulos / Salto</div>
+      <div class="ctrl"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> Fases · <kbd>C</kbd> Auto · <kbd>P</kbd> Pausa</div>
     </footer>
   </div>
 
-  <script type="module" src="src/main.js?v=6"></script>
+  <script type="module" src="src/main.js?v=7"></script>
 </body>
 </html>

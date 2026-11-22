@@ -10,6 +10,9 @@ const MANIFEST = {
   mothership: { src: "assets/sprites/mothership.jpg", key: "magenta" },
   zotra_sentinel: { src: "assets/sprites/zotra_sentinel.jpg", key: "green" },
   zotra_boss: { src: "assets/sprites/zotra_boss.jpg", key: "green" },
+  ulises_hero: { src: "assets/sprites/ulises_hero.jpg", key: "green" },
+  trident_soldier: { src: "assets/sprites/trident_soldier.jpg", key: "magenta" },
+  cyclops_centurion: { src: "assets/sprites/cyclops_centurion.jpg", key: "green" },
 };
 
 function processChromaSprite(img, keyColor) {
@@ -131,6 +134,22 @@ class SpriteAtlas {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(spr, -w * 0.5, -h * 0.5, w, h);
+    return true;
+  }
+
+  drawGrounded(ctx, name, targetHeight, flipX = false) {
+    const spr = this.get(name);
+    if (!spr) return false;
+    const aspect = spr.width / spr.height;
+    const h = targetHeight;
+    const w = h * aspect;
+
+    ctx.save();
+    if (flipX) ctx.scale(-1, 1);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(spr, -w * 0.5, -h, w, h);
+    ctx.restore();
     return true;
   }
 }

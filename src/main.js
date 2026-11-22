@@ -1,12 +1,13 @@
-import { Game } from "./game.js?v=2";
-import { sound } from "./audio.js";
-import { sprites } from "./sprites.js?v=2";
+import { Game } from "./game.js?v=3";
+import { sound } from "./audio.js?v=2";
+import { sprites } from "./sprites.js?v=3";
 
 sprites.init();
 
 const canvas = document.getElementById("game");
 const btnStage1 = document.getElementById("btn-stage1");
 const btnStage2 = document.getElementById("btn-stage2");
+const btnStage3 = document.getElementById("btn-stage3");
 const btnMute = document.getElementById("btn-mute");
 const btnPause = document.getElementById("btn-pause");
 const btnRestart = document.getElementById("btn-restart");
@@ -306,6 +307,8 @@ window.addEventListener("keydown", (e) => {
     game.startNewGame(1);
   } else if (e.code === "Digit2") {
     game.startNewGame(2);
+  } else if (e.code === "Digit3") {
+    game.startNewGame(3);
   } else if (e.code === "KeyV" || e.code === "KeyE") {
     game.onSplitAction();
   } else if (e.code === "KeyX" || e.code === "ShiftLeft" || e.code === "ShiftRight" || e.code === "KeyK") {
@@ -315,7 +318,7 @@ window.addEventListener("keydown", (e) => {
   } else if (e.code === "KeyM") {
     toggleMute();
   } else if (e.code === "KeyR") {
-    game.startNewGame(game.level.stage);
+    game.startNewGame(game.currentStage);
   }
 });
 
@@ -336,6 +339,10 @@ btnStage2?.addEventListener("click", () => {
   game.startNewGame(2);
 });
 
+btnStage3?.addEventListener("click", () => {
+  game.startNewGame(3);
+});
+
 btnMute.addEventListener("click", () => {
   toggleMute();
   canvas.focus?.();
@@ -346,7 +353,7 @@ btnPause.addEventListener("click", () => {
 });
 
 btnRestart.addEventListener("click", () => {
-  game.startNewGame(game.level.stage);
+  game.startNewGame(game.currentStage);
 });
 
 let lastTime = performance.now();

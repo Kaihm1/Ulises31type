@@ -30,7 +30,7 @@ export class LevelDirector {
     this.stage = stage;
     this.elapsed = 0;
     this.scrollX = 0;
-    this.scrollSpeed = stage === 2 ? 96 : 88;
+    this.scrollSpeed = stage === 3 ? 96 : 88;
     this.nextEventIndex = 0;
     this.bossSpawned = false;
     this.planetX = WIDTH * 0.82;
@@ -274,7 +274,7 @@ export class LevelDirector {
   }
 
   get progress() {
-    const dur = this.stage === 2 ? 36.8 : 35.5;
+    const dur = this.stage === 3 ? 36.8 : 35.5;
     return Math.min(1, this.elapsed / dur);
   }
 
@@ -306,7 +306,7 @@ export class LevelDirector {
 
   drawBackground(ctx) {
     const playH = this.getPlayableBottom();
-    const isZotra = this.stage === 2;
+    const isZotra = this.stage === 3;
 
     // Gradiente espacial específico por Episodio
     const bg = ctx.createLinearGradient(0, 0, 0, playH);
@@ -409,7 +409,7 @@ export class LevelDirector {
   drawTerrain(ctx, playH) {
     const startIdx = Math.max(0, Math.floor(this.scrollX / TILE_W) - 1);
     const endIdx = Math.min(this.terrain.length - 1, startIdx + Math.ceil(WIDTH / TILE_W) + 3);
-    const isZotra = this.stage === 2;
+    const isZotra = this.stage === 3;
 
     for (let i = startIdx; i <= endIdx; i++) {
       const seg = this.terrain[i];
