@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ULISES 31: ODISEA R-TYPE</title>
+  <link rel="icon" href="assets/sprites/odiseus.jpg" type="image/jpeg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0a1026" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="cabinet">
+    <header class="topbar">
+      <div class="brand">
+        <span class="badge">1981 // 2026</span>
+        <h1>ULISES 31 <span class="accent">ODISEA R-TYPE</span></h1>
+      </div>
+      <div class="quick-actions">
+        <span id="pad-status" class="pad-pill">MANDO: OFF</span>
+        <button id="btn-stage1" type="button" title="Jugar Fase 1: El Cíclope (1)">FASE 1</button>
+        <button id="btn-stage2" type="button" title="Jugar Fase 2: El Planeta Perdido (2)">FASE 2</button>
+        <label class="music-upload" title="Cargar MP3/OGG/WAV de la serie">
+          + MÚSICA MP3
+          <input id="music-file" type="file" accept="audio/*" hidden />
+        </label>
+        <button id="btn-mute" type="button" title="Silenciar / Activar audio (M)">AUDIO: ON</button>
+        <button id="btn-pause" type="button" title="Pausar (P)">PAUSA</button>
+        <button id="btn-restart" type="button" title="Reiniciar (R)">REINICIAR</button>
+      </div>
+    </header>
+
+    <main class="stage-wrap">
+      <canvas id="game" width="960" height="540"></canvas>
+      <div class="scanlines" aria-hidden="true"></div>
+    </main>
+
+    <div id="touch-controls" class="touch-controls" aria-label="Controles táctiles">
+      <div id="touch-stick-zone" class="touch-stick-zone">
+        <div class="stick-base">
+          <div id="stick-knob" class="stick-knob"></div>
+        </div>
+      </div>
+      <div class="touch-buttons">
+        <button id="tbtn-auto" type="button" class="tbtn tbtn-small">AUTO</button>
+        <button id="tbtn-split" type="button" class="tbtn tbtn-small">3 MOD</button>
+        <button id="tbtn-pod" type="button" class="tbtn tbtn-med">POD</button>
+        <button id="tbtn-fire" type="button" class="tbtn tbtn-fire">FIRE<br><small>BEAM</small></button>
+      </div>
+    </div>
+
+    <footer class="controls-bar">
+      <div class="ctrl"><kbd>WASD</kbd> / <kbd>Flechas</kbd> Mover</div>
+      <div class="ctrl"><kbd>Z</kbd> / <kbd>Espacio</kbd> Disparo + <strong>BEAM</strong></div>
+      <div class="ctrl"><kbd>C</kbd> Autofire</div>
+      <div class="ctrl"><kbd>X</kbd> / <kbd>Shift</kbd> <strong>Nono-Pod</strong></div>
+      <div class="ctrl"><kbd>V</kbd> / <kbd>E</kbd> <strong>Separar 3 Módulos</strong></div>
+      <div class="ctrl"><kbd>1</kbd>/<kbd>2</kbd> Fases · <kbd>P</kbd> Pausa · <kbd>M</kbd> Audio</div>
+    </footer>
+  </div>
+
+  <script type="module" src="src/main.js?v=6"></script>
+</body>
+</html>

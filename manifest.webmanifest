@@ -1,0 +1,16 @@
+{
+  "name": "Ulises 31: Odisea R-Type",
+  "short_name": "Ulises 31",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#040611",
+  "theme_color": "#0a1026",
+  "icons": [
+    {
+      "src": "assets/sprites/odiseus.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
